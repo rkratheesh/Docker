@@ -1,0 +1,25 @@
+{% load i18n %}
+<div class="oh-modal__dialog-title">{% trans "Asset Return Form" %}</div>
+<form hx-post="{%url 'asset-allocate-return' asset_id=asset_id %}" hx-target="#asset-request-allocation-modal-target" method="post">
+  {% csrf_token %}
+  <div class="m-3">
+    <div class="oh-input__group ">
+      <label class="oh-input__label" for="objective">{% trans "Return Status" %}</label>
+      {{asset_return_form.return_status}}
+    </div>
+    <div class="oh-input__group ">
+      <label class="oh-input__label" for="objective">{% trans "Return Date" %}</label>
+      {{asset_return_form.return_date}}
+      {{asset_return_form.return_date.errors}}
+    </div>
+    <div class="oh-input__group ">
+      <label class="oh-input__label" for="objective">{% trans "Return Condition" %}</label>
+      {{asset_return_form.return_condition}}
+    </div>
+  </div>
+  <div class="oh-modal__dialog-footer">
+    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow ">
+      {% trans "Save" %}
+    </button>
+  </div>
+</form>

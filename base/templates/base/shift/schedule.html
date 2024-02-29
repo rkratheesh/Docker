@@ -1,0 +1,44 @@
+{% extends 'settings.html' %}
+{% load i18n %}
+{% block settings %}
+<div class="oh-inner-sidebar-content">
+    {% if perms.base.add_employeeshiftschedule %}
+    <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+        <h2 class="oh-inner-sidebar-content__title">{% trans "Shift Schedule" %}</h2>
+        <button
+            class="oh-btn oh-btn--secondary oh-btn--shadow"
+            data-toggle="oh-modal-toggle"
+            data-target="#shiftScheduleModal"
+            hx-get="{% url 'employee-shift-schedule-create' %}"
+            hx-target="#shiftScheduleForm"
+        >
+            <ion-icon name="add-outline" class="me-1"></ion-icon>
+            {% trans "Create" %}
+        </button>
+    </div>
+    {% endif %}
+
+    {% include 'base/shift/schedule_view.html' %}
+</div>
+
+<div
+	class="oh-modal"
+	id="shiftScheduleModal"
+	role="dialog"
+	aria-labelledby="shiftScheduleModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+				{% trans "Employee Shift Schedule" %}
+			</h2>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="shiftScheduleForm"></div>
+	</div>
+</div>
+
+{% endblock settings %}

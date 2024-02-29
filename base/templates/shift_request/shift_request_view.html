@@ -1,0 +1,54 @@
+{% extends "index.html" %}
+{% block content %}
+{% load i18n %}
+{% load basefilters %}
+{% load attendancefilters %}
+{% include 'shift_request/shift_request_nav.html' %}
+<div class="oh-checkpoint-badge mb-2" id="selectedShifts" data-ids="[]" data-clicked="" style="display:none;" >
+  {% trans "Selected Shifts" %}
+</div>
+<div id="view-container" class="oh-wrapper">
+  {% if data %}
+    {% include 'shift_request/htmx/requests.html' %}
+  {% else %}
+    {% include 'shift_request/htmx/empty_request.html' %}
+  {% endif %}
+</div>
+
+
+<div
+  class="oh-modal"
+  id="shiftRequestModalUpdate"
+  role="dialog"
+  aria-labelledby="shiftRequestModalUpdate"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h5 class="oh-modal__dialog-title" id="shiftRequestModalUpdateLabel"
+        >{% trans "Update Request" %}</span
+      >
+      <button class="oh-modal__close--custom" aria-label="Close" onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    
+    <div class="oh-modal__dialog-body" id='shiftRequestModalUpdateBody'>
+    </div>
+  </div>
+</div>
+<div
+    class="oh-modal" style="z-index: 60;"
+    id="shiftRequestDetailModal"
+    role="dialog"
+    aria-labelledby="shiftRequestDetailModal"
+    aria-hidden="true"
+    >
+    <div
+        class="oh-modal__dialog oh-modal__dialog-relative"
+        style="max-width: 550px"
+        id="shiftRequestDetailTarget"
+    ></div>
+</div>
+
+{% endblock content %}

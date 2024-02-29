@@ -1,0 +1,58 @@
+{% extends 'index.html' %} 
+{% block content %}
+{% load static %}
+{% load i18n %}
+{% include 'attendance/attendance/attendance_nav.html' %}
+<div class="oh-wrapper" id='attendance-container'>
+  <div class="oh-tabs">
+    <ul class="oh-tabs__tablist">
+      <li class="oh-tabs__tab" data-target="#tab_1">
+        {% trans "Validate Attendances" %}
+
+      </li>
+      <li class="oh-tabs__tab oh-tabs__tab" data-target="#tab_3">
+        {% trans "OT Attendances" %}
+
+      </li>
+      <li class="oh-tabs__tab" data-target="#tab_2">
+        {% trans "Validated Attendances" %}
+      </li>
+    </ul>
+    <div class="oh-tabs__contents" id='tab_contents'>
+      {% include 'attendance/attendance/tab_content.html' %}
+    </div>
+  </div>
+</div>
+
+<script>
+  function shiftChange(selectElement) {
+    var shiftId =selectElement.val()
+    let parentForm = selectElement.parents().closest("form")
+    var attendanceDate = parentForm.find("[name=attendance_date]").first().val()
+    $.ajax({
+      type: "post",
+      url: "{% url 'update-shift-details' %}",
+      data: {
+        csrfmiddlewaretoken: getCookie("csrftoken"),
+        "shift_id":shiftId,
+        "attendance_date":attendanceDate
+
+      },
+      success: function (response) {
+        parentForm.find("[name=attendance_clock_in]").val(response.shift_start_time)
+        parentForm.find("[name=attendance_clock_out]").val(response.shift_end_time)
+        parentForm.find("[name=attendance_worked_hour]").val(response.worked_hour)
+        parentForm.find("[name=minimum_hour]").val(response.minimum_hour)
+        parentForm.find("[name=attendance_clock_out_date]").val(response.checkout_date)
+        parentForm.find("[name=attendance_clock_in_date]").val(response.checkin_date)
+        if (parentForm.find("[name=attendance_date]").val().length == 0) {
+          parentForm.find("[name=attendance_date]").val(response.checkin_date)
+        }
+      }
+    });
+  }
+</script>
+
+
+
+{% endblock content %}

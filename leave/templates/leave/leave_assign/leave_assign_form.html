@@ -1,0 +1,19 @@
+{% load i18n %} 
+{% if form.errors %}
+<!-- form errors  -->
+    <div class="oh-wrapper">
+        <div class="oh-alert-container">
+            {% for error in form.non_field_errors %}
+                <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+<form hx-post="{% url 'assign' %}">
+    {{assign_form}}
+    <div class="oh-modal__dialog-footer">
+        <button type="submit" class="oh-btn oh-btn--secondary w-100">
+          {% trans "Apply" %}
+        </button>
+    </div>
+</form>

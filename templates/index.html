@@ -1,0 +1,591 @@
+{% load static %}
+{% load i18n %}
+{% load attendancefilters %}
+<!DOCTYPE html>
+<html>
+  {% get_current_language_bidi as LANGUAGE_BIDI %}
+  {% get_current_language as LANGUAGE_CODE %}
+  {% comment %} <html dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}" lang="{{ LANGUAGE_CODE }}"> {% endcomment %}
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Horilla</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicons/apple-touch-icon.png' %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicons/favicon-32x32.png' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicons/favicon-16x16.png' %}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.20/dist/sweetalert2.min.css">
+
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="stylesheet" href="{% static 'build/css/style.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'build/css/summernote-lite.min.css' %}" />
+  <script src="{% static '/jquery/ajax.js' %}" ></script>
+  <script src="{% static '/jquery/jquery.min.js' %}"></script>
+  <link rel="stylesheet" href="{% static '/jquery/jqueryui.css' %}">
+  <script src="{% static '/jquery/jqueryui.js' %}"></script>
+  <!-- Popper.JS -->
+  <!-- Bootstrap JS -->
+  {% block styles %}
+  {% endblock styles %}
+  <style>
+    .oh-modal__close--custom {
+      border: none;
+      background: none;
+      font-size: 1.5rem;
+      opacity: 0.7;
+      position: absolute;
+      top: 25px;
+      right: 15px;
+      cursor: pointer;
+      -webkit-transition: all 0.3s ease-in-out;
+      transition: all 0.3s ease-in-out;
+  }
+    ul.errorlist {
+      color: #d9534f;
+      background-color: #f0d8d8;
+      border-color: #d6e9c6;padding: 15px; 
+      margin-bottom: 20px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      
+    }
+    ul:not(.ul){
+      list-style-type: none; 
+    }
+    ion-icon {
+      pointer-events: none;
+    }
+    .row-status--purple {
+      border-left: 4px solid rgba(128, 128, 128, 0.482);
+      border-radius: 5px;
+      }
+    .row-status--cyan {
+      border-left: 4px solid cyan;
+      border-radius: 5px;
+      }
+    .row-status--yellow {
+      border-left: 4px solid yellowgreen;
+      border-radius: 5px;
+      }
+    .row-status--red {
+      border-left: 4px solid red;
+      border-radius: 5px;
+      }
+    .row-status--black {
+      border-left: 4px solid black;
+      border-radius: 5px;
+      }
+    .row-status--gray {
+        border-left: 4px solid gray;
+        border-radius: 5px;
+      }
+      .row-status--orange {
+        border-left: 4px solid orange;
+        border-radius: 5px;
+      }
+      .row-status--gray {
+        border-left: 4px solid gray;
+        border-radius: 5px;
+      }
+      .row-status--yellow {
+        border-left: 4px solid yellowgreen;
+        border-radius: 5px;
+      }
+      .row-status--blue {
+          border-left: 4px solid rgb(103, 171, 238);
+          border-radius: 5px;
+        }
+    form label{
+      font-weight: 700;
+    }
+    .oh-modal .oh-modal__dialog-title{
+      font-weight: 600;
+      color: #4f4a4a;
+    }
+      
+  .flexbox {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+  }
+
+  .flexbox > div {
+    width: 300px;
+    height: 300px;
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 25%;
+    flex: 0 0 25%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  .triple-spinner {
+    display: block;
+    position: relative;
+    width: 125px;
+    height: 125px;
+    border-radius: 50%;
+    border: 4px solid transparent;
+    border-top: 4px solid #FF5722;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+  }
+  
+  .triple-spinner::before,
+  .triple-spinner::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    border: 4px solid transparent;
+  }
+  .triple-spinner::before {
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    border-top-color: #FF9800;
+    -webkit-animation: spin 3s linear infinite;
+    animation: spin 3.5s linear infinite;
+  }
+  .triple-spinner::after {
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    border-top-color: #FFC107;
+    -webkit-animation: spin 1.5s linear infinite;
+    animation: spin 1.75s linear infinite;
+  }
+
+  -webkit-@keyframes spin {
+  -webkit-from {
+    -webkit-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  -webkit-to {
+    -webkit-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+@-webkit-keyframes spin {
+  from {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  from {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+.oh-titlebar__tag.filter-field{
+  border: solid 1px #ff450033;
+}
+.oh-titlebar__tag--custom{
+  background-color: rgba(255, 68, 0, 0.543) !important;
+  color: white;
+}
+.loader-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin-left: 199px;
+}
+
+.loader {
+  border: 10px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 10px solid #a4a3a3;
+  width: 100%;
+  height: 100%;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+.loader-text {
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 15px;
+  font-weight: bold;
+  color: #000;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.oh-accordion-meta__header .oh-accordion-meta__title {
+  font-weight: 600;
+}
+
+
+.exclude-accordion-style{
+  cursor:pointer;
+}
+    
+    .panel {
+      display: none;
+      background-color: white;
+      overflow: hidden;
+      
+    }
+    .perm-accordion{
+      border: 1px solid #6c757d1c !important;
+      margin: 0 0 2px 0 !important;
+      width: -100%;
+    }
+    .app-permissions{
+      background-color: rgba(242, 249, 255, 0.586);
+    }
+    .perm-accordion-active{
+      background-color: rgba(215, 233, 251, 0.621) !important;
+    }
+    .perm-accordion-active:hover{
+      background-color: rgba(215, 233, 251, 0.408) !important;
+    }
+  </style>
+</head>
+
+{% comment %} <div class="flexbox"> {% endcomment %}
+
+
+  <!-- TRIPLE SPINNER -->
+  {% comment %} <div>
+    <div class="triple-spinner"></div>
+  </div> {% endcomment %}
+{% comment %} </div> {% endcomment %}
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    {% if messages %}
+    <div class="oh-alert-container">
+        {% for message in messages %}
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+              {{ message }}
+        </div> 
+        {% endfor %}
+    </div>
+    {% endif %}
+
+
+    <div class="oh-wrapper-main" :class="!sidebarOpen ? 'oh-wrapper-main--closed' : ''" x-data="{sidebarOpen: true}"
+    @load.window="
+    width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+    if (width < 575.98) {
+      sidebarOpen = false
+    }" @resize.window="
+    width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+    if (width < 575.98) {
+      sidebarOpen = false
+    }">
+    <div id="sidebar" >
+     {% include 'sidebar.html' %}
+    </div>
+
+    <div id="main">
+      <!-- Navigation -->
+      <!-- Confirm Modal -->
+      <div
+      class="oh-modal"
+      id="confirmModal"
+      role="dialog"
+      aria-labelledby="confirmModalLabel"
+      aria-hidden="true"
+    >
+      <div class="oh-modal__dialog oh-modal__dialog--confirm">
+        <div class="oh-modal__dialog-header">
+          <span class="oh-modal__dialog-title" id="confirmModalLabel"
+            ></span
+          >
+        </div>
+        <div class="oh-modal__dialog-body" id="confirmModalBody">
+        
+        </div>
+        {% comment %} <div class="oh-modal__dialog-footer">
+          <button class="oh-btn oh-btn--success" id="ok">{% trans "Confirm" %}</button>
+          <button class="oh-btn oh-btn--danger oh-modal__cancel" id="cancel">
+          {% trans "Cancel" %}
+          </button>
+        </div> {% endcomment %}
+      </div>
+    </div>
+    <!-- End of Confirm Modal -->
+    <div class="oh-activity-sidebar " id="allNotifications">
+      <div class="oh-activity-sidebar__header">
+        {% comment %} <ion-icon name="chevron-back-outline" id="notificationClose" class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md hydrated"  role="img" aria-label="chevron back outline"></ion-icon> {% endcomment %}
+        <span id="notificationClose" style="cursor: pointer;" title="{% trans 'Close' %}">
+          <ion-icon
+            name="chevron-back-outline"
+            class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
+            id="close"
+            data-target="#activitySidebar"
+            style="font-size: 24px;"
+          ></ion-icon>
+        <span class="oh-activity-sidebar__title"> {% trans "All Notifications" %}</span>
+      </div>
+      <div class="oh-activity-sidebar__body" id="allNotificationBody">
+        {% include "notification/all_notifications.html" %}
+      </div>
+    </div>
+      <nav class="oh-navbar">
+        <div class="oh-wrapper oh-navbar__wrapper">
+          {% comment %} <div class="oh-navbar__toggle-container">
+            <a href="#" class="oh-navbar__toggle-link oh-link__unstyled" @click="sidebarOpen = !sidebarOpen">
+              <img src="{% static 'images/ui/menu.svg' %}" width="24" height="24" class="oh-navbar__toggle-menu"
+                loading="lazy" />
+              <span class="oh-tabs__movable-title" style="color: rgb(0, 0, 14);">{% trans request.session.title %}</span>
+            </a>
+          </div> {% endcomment %}
+          <div class="oh-navbar__toggle-container">
+            <a href="#" class="oh-navbar__toggle-link oh-link__unstyled" @click="sidebarOpen = !sidebarOpen">
+              <img src="{% static 'images/ui/menu.svg' %}" width="24" height="24" class="oh-navbar__toggle-menu"
+                loading="lazy" />
+            </a>
+              <!-- <span class="oh-navbar__page-title">Attendances</span> -->
+              {% if breadcrumbs %}
+              {% comment %} {{breadcrumbs}} {% endcomment %}
+                <ul class="oh-navbar__breadcrumb">
+                  {% for breadcrumb in breadcrumbs %}
+                    {% if forloop.last %}
+                      <li class="oh-navbar__breadcrumb-item">
+                        {% if breadcrumb.found %}
+                          <a href="{{breadcrumb.url}}" class="oh-navbar__breadcrumb-link active">{% trans breadcrumb.name %}</a>
+                        {% else %}
+                          <a href="#" class="oh-navbar__breadcrumb-link active">{% trans breadcrumb.name %}</a>
+                        {% endif %}
+                      </li>
+                    {% else %}
+                      <li class="oh-navbar__breadcrumb-item">
+                        {% if breadcrumb.found %}
+                          <a href="{{breadcrumb.url}}" class="oh-navbar__breadcrumb-link">{% trans breadcrumb.name %}</a>
+                        {% else %}
+                          <a href="#" class="oh-navbar__breadcrumb-link">{% trans breadcrumb.name %}</a>
+                        {% endif %}
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </a>
+          </div>
+          <div class="oh-navbar__systray">
+            <div id="attendance-activity-container">
+            {% if request.user.employee_get %}
+              {% if request.session.selected_company == "all" or request.user.employee_get.employee_work_info.company_id.id == request.session.selected_company|default:"-1"|add:"0" %}
+              
+              {% comment %}  "CHEKING WETHER ITS IS THE CURRENT EMPLOYEES COMPANY OR ALL COMPANY, THEN ONLY SHOWS THE CHECK-IN CHECK-OUT BUTTON" {% endcomment %}
+                {% if request.user|is_clocked_in  %}
+                <button class="oh-btn oh-btn--warning-outline mr-2" hx-get="{% url 'clock-out' %}"  hx-target='#attendance-activity-container' hx-swap='innerHTML'><ion-icon class="oh-navbar__clock-icon mr-2 text-warning" name="exit-outline"></ion-icon>
+                  <span class="hr-Check-In-out-text">{% trans "Check-Out" %}</span>                
+                </button>
+                {% else %}
+                <button class="oh-btn oh-btn--success-outline mr-2" hx-get="{% url 'clock-in' %}"  hx-target='#attendance-activity-container' hx-swap='innerHTML'><ion-icon class="oh-navbar__clock-icon mr-2 text-success" name="enter-outline"></ion-icon>
+                  <span class="hr-Check-In-out-text">{% trans "Check-In" %}</span>                
+                </button>
+                {% endif %}
+              {% endif %}
+            {% endif %}
+            </div>
+            {% if request.user|any_permission:'base' or perms.attendance.add_attendancevalidationcondition %}
+              <div class="oh-navbar__action-icons" title="Settings">
+                <a href="/settings/department-view" class="oh-navbar__action-icons-link">
+                  <ion-icon name="settings-outline"  class="oh-navbar__icon"></ion-icon>
+                </a>
+              </div>
+            {% endif %}
+            {% include 'notification/notification.html' %}
+            <div class="oh-dropdown" x-data="{open: false}" @click="open = !open" title="Languages">
+              <div class="oh-navbar__action-icons">
+                  <a href="#" class="oh-navbar__action-icons-link">
+                      <ion-icon name="globe-outline" class="oh-navbar__icon"></ion-icon>
+                  </a>
+                  <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" @click.outside="open = false" style="display:none;">
+                      <ul class="oh-dropdown__items">
+                          {% get_available_languages as LANGUAGES %}
+                          {% for language in LANGUAGES %}
+                          <li class="oh-dropdown__item">
+                              <a href="{% url 'set_language' %}" class="oh-dropdown__link"
+                                 onclick="event.preventDefault(); document.getElementById('language-form-{{ language.0 }}').submit();">
+                                  <img src="/static/images/ui/{{ language.0 }}.png" class="oh-dropdown__lang-icon"/>{{ language.1 }}{% if language.0 == LANGUAGE_CODE %}      
+                                  <ion-icon name="checkmark-circle-outline" style="
+                                  position: relative;
+                                  top: 3.3px;
+                                  color: green;
+                                  font-size: 1.2em;
+                              "></ion-icon>
+                                  {% endif %}
+                              </a>
+                              <form id="language-form-{{ language.0 }}" action="{% url 'set_language' %}" method="post" style="display: none;">
+                                  {% csrf_token %}
+                                  <input type="hidden" name="language" value="{{ language.0 }}">
+                              </form>
+                          </li>
+                          {% endfor %}
+                      </ul>
+                  </div>
+              </div>
+            </div>
+            {% if perms.base.view_company %}       
+              <div class="oh-dropdown" x-data="{open: false}" @click="open = !open" title="Companies">
+                <div class="oh-navbar__action-icons">
+                    <a href="#" class="oh-navbar__action-icons-link">
+                      <ion-icon name="business"></ion-icon>
+                    </a>
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" @click.outside="open = false" style="display:none;">
+                        <ul class="oh-dropdown__items">
+                            {% for company in all_companies %}
+                            <li class="oh-dropdown__item">
+                                <a hx-get="{% url "update-selected-company" %}?company_id={{company.0}}"class="oh-dropdown__link">
+                                    <img src="{{company.2}}" class="oh-dropdown__lang-icon" style="border-radius: 50%;"/>{{company.1}}   
+                                    {% if company.3 %}
+                                    <ion-icon name="checkmark-circle-outline" style="
+                                        position: relative;
+                                        top: 3.3px;
+                                        color: green;
+                                        font-size: 1.2em;
+                                    "></ion-icon>
+                                    {% endif %}
+                                    {% if not company_selected and request.user.employee_get.employee_work_info.company_id.id == company.0 %}
+                                    <ion-icon name="checkmark-circle-outline" style="
+                                        position: relative;
+                                        top: 3.3px;
+                                        color: green;
+                                        font-size: 1.2em;
+                                    "></ion-icon>
+                                    {% endif %}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+              </div> 
+            {% endif %}    
+            <div class="oh-dropdown" x-data="{open: false}">
+              <div class="oh-navbar__user-info" @click="open = !open" @click.outside="open = false">
+                <div class="oh-navbar__user-photo">
+                  <img src="{{request.user.employee_get.get_avatar}}" class="oh-navbar__user-image" loading="lazy" />
+                </div>
+                <span class="oh-navbar__user-name">{{user.employee_get.employee_first_name | title}}</span>
+              </div>
+              <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none;">
+                <ul class="oh-dropdown__items">
+                  <li class="oh-dropdown__item">
+                    <a href="/employee/employee-profile" class="oh-dropdown__link">{% trans "My Profile" %}</a>
+                  </li>
+                  <li class="oh-dropdown__item">
+                    <a href="/change-password" class="oh-dropdown__link">{% trans "Change Password" %}</a>
+                  </li>
+                </ul>
+                <hr />
+                <ul class="oh-dropdown__items">
+                  <li class="oh-dropdown__item">
+                    <a href="/logout" class="oh-dropdown__link">{% trans "Logout" %}</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </nav>
+      <!-- End of Navigation -->
+
+      <div id='main-section' >
+        <div id="tripple-loader-contaner" class="d-flex justify-content-center align-items-center  tripple-loader-contaner--visible" style="height:90vh;"><div class="triple-spinner"></div></div>
+        <div id="main-section-data" style="display: none;">
+          {% block content %}
+          {% include 'dashboard.html' %}
+          {% endblock content %}
+        </div>
+      </div>
+    </div>
+
+
+   
+  </div>
+  
+  <!--htmx script -->
+
+  <script src="{% static 'build/js/web.frontend.min.js' %}"></script>
+  <script src="{% static 'htmx/htmx.min.js' %}"></script>
+  <script>
+    document.body.addEventListener('htmx:configRequest', (event) => {
+      event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+    })
+
+      $(document).ready(function () {
+        $("#close").attr(
+          "class",
+          "oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md hydrated"
+        );
+      });
+      $("#notificationClose").click(function (e) {
+        $("#allNotifications").removeClass("oh-activity-sidebar--show");
+      });
+
+  </script>
+  <!-- this is the master js  -->
+  <script src="{% static '/index/index.js' %}"></script>
+  <script src="{% static '/index/saveFilters.js' %}"></script>
+  <script src="{% static 'build/js/htmxSelect2.js' %}" ></script>
+  <script src="{% static 'build/js/summernote-lite.min.js' %}" ></script>
+  <script src="{% static 'attendance/actions.js' %}"></script>
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  <script src="{% static '/build/js/sweetAlert.js' %}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    $(document).ready(function () {
+      $('body').on('click', '.select2-search__field', function(e) {
+      e.stopPropagation();
+    });
+    });
+  </script>
+
+</body>
+
+</html>
